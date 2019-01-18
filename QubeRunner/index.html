@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -12,17 +12,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.6/processing.js"></script>
   </head>
   <body>
+   <div class="jumbotron">
     <div class="container">
-      <div class="page-header">
-	<h1>サンプル　　<small>サブ・テキスト</small></h1>
-</div>
-    	<h1 class="page-header">Qube Runner</h1>
-    	<p>このゲームは、Qubeをジャンプさせながら進む、ランアクションゲームです。</p>
+        <h1>Qube Runner</h1>
+        <p>はまるゲーム！</p>
+    </div>
+   </div>
+    <div class="container">
+         <div class="text-center">
+         <canvas data-processing-sources="QubeRunner.pde"></canvas>
+         </div>
+        <h2>ゲーム説明</h2>
+    	<p>このゲームは、Qubeをジャンプさせながら進む、ランアクションゲームです。<br />クリックしてジャンプします。ハイスコアを目指しましょう！</p>
     
-       <h2>あそびかた</h2>
-       <p>クリックしてジャンプさせましょう。</p>
-
-    	<canvas data-processing-sources="QubeRunner.pde"></canvas>
+       <h2>こだわったところ</h2>
+       <p>シームレスに始まるタイトル画面</p>
+    	
     </div>
 
     <!-- Optional JavaScript -->
