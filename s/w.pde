@@ -120,7 +120,7 @@ void game() {
   if(tk == 0){
     ggov = 1;
   }
-  if(gov == 1){
+  if(ggov == 1){
     gov();
   }
     
@@ -580,6 +580,7 @@ void mousePressed() {
     //bomb.play();
     //bomb.rewind();
     tk =- 1;
+}
     
 void init() {
 
