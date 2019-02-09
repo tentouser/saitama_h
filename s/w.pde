@@ -84,7 +84,7 @@ void draw() {
   // sc +=1;
   //}
   if (sc == 6) {
-    clear();
+    cclear();
   }
 }
 
@@ -501,7 +501,7 @@ void stage03(){
   
 
 
-void clear() {
+void cclear() {
 
 
   // image(taikukann2, 0, 0);
