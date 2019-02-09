@@ -39,7 +39,7 @@ float gx = 610;
 float upgx = 650;
 float udgx = 690;
 float tk = 10;
-float gov = 0;
+float ggov = 0;
 
 
 
@@ -118,7 +118,7 @@ void game() {
     tk = 10;
   }
   if(tk == 0){
-    gov = 1;
+    ggov = 1;
   }
   if(gov == 1){
     gov();
