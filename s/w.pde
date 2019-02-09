@@ -567,6 +567,20 @@ void keyPressed() {
 //bomb.play();
 //bomb.rewind();
 
+void mousePressed() {
+  ys = 350;
+    jumpTimer = 0;
+     shoot = 1;
+    gy = 110;
+    y = 355;
+    x = xs;
+    ball_y_s = -90;
+    ball_x_s = 25;
+    goal = 0;
+    //bomb.play();
+    //bomb.rewind();
+    tk =- 1;
+    
 void init() {
 
   x = 300;
