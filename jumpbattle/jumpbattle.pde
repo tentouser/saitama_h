@@ -45,8 +45,8 @@ void draw(){
     }
     for(int j=0; j<blockList.size(); j++){
       Block b = blockList.get(j);
-      boolean isHit = isHit(p.pos.x, p.pos.y, p.size.x, p.size.y, b.pos.x, b.pos.y, b.size.x, b.size.y);
-      if(isHit){
+      boolean hit = isHit(p.pos.x, p.pos.y, p.size.x, p.size.y, b.pos.x, b.pos.y, b.size.x, b.size.y);
+      if(hit){
         p.velocity.y = 0;
         p.pos.y = b.pos.y - b.size.y / 2 - p.size.y / 2;
         p.isGround = true;
@@ -57,12 +57,12 @@ void draw(){
       if(other == p){
         continue;
       }
-      boolean isHit = isHit(p.pos.x, p.pos.y, p.size.x, p.size.y, other.pos.x, other.pos.y, other.size.x, other.size.y);
+      boolean hit = isHit(p.pos.x, p.pos.y, p.size.x, p.size.y, other.pos.x, other.pos.y, other.size.x, other.size.y);
       boolean isUnder = false;
       if(p.pos.y < other.pos.y - other.size.y/2){
         isUnder = true;
       }
-      if(isHit && isUnder){
+      if(hit && isUnder){
         // p.pos.y + p.size.y/2 < other.pos.y - other.size.y/2
          p.velocity.y = -20;
          other.velocity.y += 5;
