@@ -103,7 +103,13 @@ void updatePlayers(){
   
   for(int i=0; i<players.length; i++){
     Player p = players[i];
-    p.pos.x = clamp(p.pos.x, 0, width);
+    if(p.pos.x + p.size.x / 2 < 0){
+      p.pos.x = width;
+    }
+    if(p.pos.x - p.size.x / 2 > width){
+      p.pos.x = 0;
+    }
+    // p.pos.x = clamp(p.pos.x, 0, width);
     p.pos.y = clamp(p.pos.y, 0, height);
   }
   
