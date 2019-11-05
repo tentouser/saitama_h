@@ -302,3 +302,4 @@ static class Logic{
     return directions;
   }
 }
+
