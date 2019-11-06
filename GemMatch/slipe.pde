@@ -301,6 +301,10 @@ static class Logic{
       int index = 1;
       IrSearchMovableBoxList(temp, dir, index, boxList, meepleList, meeple);
       if(temp.size() > 0){
+        Box targetBox = temp.get(0);
+        if(targetBox.isGoal && !meeple.isLeader){
+          continue;
+        }
         movableBoxList.add(temp.get(0)); 
       }
     }
@@ -333,15 +337,6 @@ static class Logic{
     for(int i=0; i<meepleList.size(); i++){
       Meeple meeple = meepleList.get(i);
       if(meeple.x == x && meeple.y == y){
-        return;
-      }
-    }
-    
-    // ゴールだったらリーダーコマ以外は排除
-    if(targetBox.isGoal){
-      if(!baseMeeple.isLeader){
-        // さらに奥を探索してみる
-        IrSearchMovableBoxList(resultList, dir, index + 1, boxList, meepleList, baseMeeple);
         return;
       }
     }
