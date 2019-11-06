@@ -188,6 +188,8 @@ void drawUI(){
     fill(255);
     textSize(32);
     text(message, width/2, 50);
+    
+    text("Press Enter", width/2, height-50);
   }
 }
 void init(){
