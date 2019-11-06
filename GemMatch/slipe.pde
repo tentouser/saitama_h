@@ -8,6 +8,10 @@ class Meeple{
   public int x;
   public int y;
   public boolean isLeader;
+  public PVector worldPosition;
+  public int toX;
+  public int toY;
+  public int status = 1;
 }
 class GameData{
   public int playerId = 1;
@@ -26,6 +30,10 @@ void setup(){
 }
 void draw(){
   background(255);
+  
+  // コマを移動
+  updateMeepleList();
+  
   // マス目を表示
   drawBoxList();
   // コマを表示
@@ -53,6 +61,10 @@ void mousePressed(){
             gameData.movableBoxList = movableBoxList;
           }
         }
+      }else{
+        // 選択解除
+        gameData.selectedMeeple = null;
+        gameData.movableBoxList = new ArrayList<Box>(); 
       }
     }else{
       // それ以外のところをクリックしたならば
@@ -62,8 +74,11 @@ void mousePressed(){
         Box box = Logic.getBoxFromPosition(gameData.movableBoxList, (int)pos.x, (int)pos.y);
         if(box != null){
           // 確定 
-          changePosition(gameData.selectedMeeple, box);
-          changeTurn();
+          // changePosition(gameData.selectedMeeple, box);
+          // changeTurn();
+          move(gameData.selectedMeeple, box);
+          // ハイライトを消す
+          gameData.movableBoxList = new ArrayList<Box>();
         }else{
           // 選択解除
           gameData.selectedMeeple = null;
@@ -77,6 +92,27 @@ void keyPressed(){
   if(gameData.status > 0){
     if(keyCode == ENTER){
       init();
+    }
+  }
+}
+void updateMeepleList(){
+  for(int i=0; i<meepleList.size(); i++){
+    Meeple meeple = meepleList.get(i);
+    // 動いている途中なら
+    if(meeple.status == 0){
+      PVector toPosition = Logic.getWorldPosition(meeple.toX, meeple.toY);
+      PVector diff = toPosition.get();
+      diff.sub(meeple.worldPosition);
+      diff.mult(0.15);
+      PVector pos = meeple.worldPosition;
+      pos.add(diff);
+      meeple.worldPosition = pos;
+      float distance = dist(pos.x, pos.y, toPosition.x, toPosition.y);
+      if(distance < 1){
+        Box targetBox = Logic.getBoxFromPosition(boxList, meeple.toX, meeple.toY);
+        fixPosition(meeple, targetBox);
+        changeTurn();
+      }
     }
   }
 }
@@ -98,8 +134,12 @@ void drawBoxList(){
 void drawMeepleList(){
   for(int i=0; i<meepleList.size(); i++){
     Meeple meeple = meepleList.get(i);
-    PVector pos = Logic.getWorldPosition(meeple.x, meeple.y);
+    PVector pos = meeple.worldPosition;
+    stroke(20);
     strokeWeight(1);
+    if(gameData.playerId == meeple.playerId){
+      strokeWeight(3); 
+    }
     fill(0, 0, 200);
     if(meeple.playerId == 2){
       fill(200, 0, 0);
@@ -120,7 +160,10 @@ void drawMovable(){
   for(int i=0; i<movableBoxList.size(); i++){
     Box box = movableBoxList.get(i);
     PVector pos = Logic.getWorldPosition(box.x, box.y);
-    fill(0, 0, 0, 100);
+    fill(0, 0, 200, 50);
+    if(gameData.selectedMeeple.playerId == 2){
+      fill(200, 0, 0, 50); 
+    }
     rect(pos.x, pos.y, 40, 40);
   }
 }
@@ -139,6 +182,7 @@ void drawUI(){
     if(gameData.status == 2){
       message = "Player 02 Win!";
     }
+    noStroke();
     fill(0, 0, 0, 100);
     rect(width/2, height/2, width, height);
     fill(255);
@@ -171,6 +215,7 @@ void init(){
     if(y == 2){
       meeple.isLeader = true;
     }
+    meeple.worldPosition = Logic.getWorldPosition(meeple.x, meeple.y);
     meepleList.add(meeple);
   }
   // プレイヤー2のコマを作る
@@ -182,12 +227,21 @@ void init(){
     if(y == 2){
       meeple.isLeader = true;
     }
+    meeple.worldPosition = Logic.getWorldPosition(meeple.x, meeple.y);
     meepleList.add(meeple);
   }
 }
-void changePosition(Meeple meeple, Box box){
+void move(Meeple meeple, Box box){
+  meeple.toX = box.x;
+  meeple.toY = box.y;
+  meeple.worldPosition = Logic.getWorldPosition(meeple.x, meeple.y);
+  meeple.status = 0;
+}
+void fixPosition(Meeple meeple, Box box){
   meeple.x = box.x;
   meeple.y = box.y;
+  meeple.status = 1;
+  meeple.worldPosition = Logic.getWorldPosition(box.x, box.y);
   if(box.isGoal){
     // 勝利！
     gameData.status = meeple.playerId;
@@ -274,17 +328,20 @@ static class Logic{
     if(targetBox == null){
       return;
     }
-    // ゴールだったらリーダーコマ以外は排除
-    if(targetBox.isGoal){
-      if(!baseMeeple.isLeader){
-        return;
-      }
-    }
     
     // マスの上にコマが乗っていないか
     for(int i=0; i<meepleList.size(); i++){
       Meeple meeple = meepleList.get(i);
       if(meeple.x == x && meeple.y == y){
+        return;
+      }
+    }
+    
+    // ゴールだったらリーダーコマ以外は排除
+    if(targetBox.isGoal){
+      if(!baseMeeple.isLeader){
+        // さらに奥を探索してみる
+        IrSearchMovableBoxList(resultList, dir, index + 1, boxList, meepleList, baseMeeple);
         return;
       }
     }
@@ -302,4 +359,3 @@ static class Logic{
     return directions;
   }
 }
-
