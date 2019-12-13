@@ -79,8 +79,16 @@ void title() {
   text("SOCCER GAME", width/2, height/2);
 
   textSize(40);
-  fill(255);
-  text("START WITH ENTER", 450, 420);
+  fill(67, 89, 99);
+  text("START WITH ENTER", 680, 450);
+
+  textSize(30);
+  fill(67, 89, 99);
+  text("SELECT = UP/DOWN", 250, 400);
+
+  textSize(30);
+  fill(67, 89, 99);
+  text("FIRING = A KEY", 250, 450);
 }
 
 
@@ -152,7 +160,7 @@ void game() {
     Bx = 100000;
     textSize(90);
     fill(255, 0, 0);
-    text("GAME OVER", width/2, height/2);
+    text("FAILED", width/2, height/2);
 
     textSize(35);
     fill(255, 0, 0);
@@ -200,7 +208,7 @@ void game() {
     if (countDown <= 10) {
       textSize(27);
     }
-    text("COUNT DOWN : "+countDown, 130, 40);
+    text("COUNT DOWN : "+ (int)countDown, 130, 40);
   } else {
     textSize(90);
     fill(255, 0, 0);
