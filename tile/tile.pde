@@ -113,7 +113,7 @@ for (int i=0; i<5; i++) {
     textSize(100);
     text(timer, width/2, height/2 );
 
-    finish();
+    _finish();
   }
 }
 
@@ -241,7 +241,7 @@ void title() {
   text("       t    ", width/2, height/2);
 }
 
-void finish() {
+void _finish() {
   if (timer<0) {
     timer = 0;
     background(0);
