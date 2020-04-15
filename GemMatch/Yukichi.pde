@@ -126,7 +126,8 @@ void updateUnitList(ArrayList<Unit> unitList){
   Unit unit = unitList.get(0);
   if(unit.status == 0){
     PVector defaultPosition = new PVector(width/2, height-100);
-    PVector diff = defaultPosition.sub(unit.pos);
+    PVector diff = defaultPosition.get();
+    diff.sub(unit.pos);
     diff.mult(0.1);
     unit.pos = unit.pos.add(diff);
   }
