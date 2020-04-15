@@ -138,7 +138,7 @@ void updateUnitList(ArrayList<Unit> unitList){
   if(unit.status == 99){
     return;
   }
-  renderStone(unit.pos, unit.type);
+  renderStone(unit.pos.x, unit.pos.y, unit.type);
 }
 void renderBoxList(ArrayList<Box> boxList){
   for(int i=0; i<boxList.size(); i++){
@@ -152,17 +152,17 @@ void renderStoneList(ArrayList<Stone> stoneList){
   for(int i=0; i<stoneList.size(); i++){
     Stone stone = stoneList.get(i);
     PVector pos = Logic.gridToWorldPosition(stone.x, stone.y);
-    renderStone(pos, stone.type);
+    renderStone(pos.x, pos.y, stone.type);
   }
 }
-void renderStone(PVector pos, int type){
+void renderStone(float x, float y, int type){
   String money = Logic.typeToMoneyString(type);
   fill(255);
-  ellipse(pos.x, pos.y, 40, 40);
+  ellipse(x, y, 40, 40);
   textAlign(CENTER, CENTER);
   fill(0);
   textSize(12);
-  text(money, pos.x, pos.y);
+  text(money, x, y);
 }
 
 GameData createGameData(){
