@@ -22,8 +22,6 @@ void draw(){
 void mousePressed(){
   Unit unit = gameData.unitList.get(0);
   unit.status = 1;
-  textSize(64);
-  text("Pressed", width/2, height/2);
 }
 void mouseReleased(){
   Unit unit = gameData.unitList.get(0);
@@ -44,8 +42,6 @@ void mouseReleased(){
   }else{
     unit.status = 0; 
   }
-  textSize(64);
-  text("Released", width/2, height/2);
 }
 
 class ClearState implements IState{
