@@ -1756,7 +1756,6 @@ module.exports = function(options,undef) {
     var w = canvas.width,
         h = canvas.height,
         baseline = h/2;
-
     // Set all canvas pixeldata values to 255, with all the content
     // data being 0. This lets us scan for data[i] != 255.
     ctx.fillStyle = "white";
@@ -7413,6 +7412,7 @@ module.exports = function withTouch(p, curElement, attachEventHandler, document,
   /**
    * Touch event support.
    */
+  // var eventHandlers = eventHandlers || [];
   attachEventHandler(curElement, "touchstart", function (t) {
     // Removes unwanted behaviour of the canvas when touching canvas
     curElement.setAttribute("style","-webkit-user-select: none");
@@ -7431,38 +7431,38 @@ module.exports = function withTouch(p, curElement, attachEventHandler, document,
 
     // If there are any native touch events defined in the sketch, connect all of them
     // Otherwise, connect all of the emulated mouse events
-    if (p.touchStart !== undef || p.touchMove !== undef ||
-        p.touchEnd !== undef || p.touchCancel !== undef) {
-      attachEventHandler(curElement, "touchstart", function(t) {
-        if (p.touchStart !== undef) {
-          t = addTouchEventOffset(t);
-          p.touchStart(t);
-        }
-      });
+    // if (p.touchStart !== undef || p.touchMove !== undef ||
+    //     p.touchEnd !== undef || p.touchCancel !== undef) {
+  //     attachEventHandler(curElement, "touchstart", function(t) {
+  //       if (p.touchStart !== undef) {
+  //         t = addTouchEventOffset(t);
+  //         p.touchStart(t);
+  //       }
+  //     });
 
-      attachEventHandler(curElement, "touchmove", function(t) {
-        if (p.touchMove !== undef) {
-          t.preventDefault(); // Stop the viewport from scrolling
-          t = addTouchEventOffset(t);
-          p.touchMove(t);
-        }
-      });
+      // attachEventHandler(curElement, "touchmove", function(t) {
+      //   if (p.touchMove !== undef) {
+      //     t.preventDefault(); // Stop the viewport from scrolling
+      //     t = addTouchEventOffset(t);
+      //     p.touchMove(t);
+      //   }
+      // });
 
-      attachEventHandler(curElement, "touchend", function(t) {
-        if (p.touchEnd !== undef) {
-          t = addTouchEventOffset(t);
-          p.touchEnd(t);
-        }
-      });
+  //     attachEventHandler(curElement, "touchend", function(t) {
+  //       if (p.touchEnd !== undef) {
+  //         t = addTouchEventOffset(t);
+  //         p.touchEnd(t);
+  //       }
+  //     });
 
-      attachEventHandler(curElement, "touchcancel", function(t) {
-        if (p.touchCancel !== undef) {
-          t = addTouchEventOffset(t);
-          p.touchCancel(t);
-        }
-      });
+  //     attachEventHandler(curElement, "touchcancel", function(t) {
+  //       if (p.touchCancel !== undef) {
+  //         t = addTouchEventOffset(t);
+  //         p.touchCancel(t);
+  //       }
+  //     });
 
-    } else {
+  //   } else {
       // Emulated touch start/mouse down event
       attachEventHandler(curElement, "touchstart", function(e) {
         updateMousePosition(curElement, e.touches[0]);
@@ -7502,10 +7502,19 @@ module.exports = function withTouch(p, curElement, attachEventHandler, document,
           p.mouseReleased();
         }
       });
-    }
+    // }
 
-    // Refire the touch start event we consumed in this function
-    curElement.dispatchEvent(t);
+  //   // Refire the touch start event we consumed in this function
+  //   curElement.dispatchEvent(t);
+      updateMousePosition(curElement, t.touches[0]);
+
+      p.__mousePressed = true;
+      p.mouseDragging = false;
+      p.mouseButton = PConstants.LEFT;
+
+      if (typeof p.mousePressed === "function") {
+        p.mousePressed();
+      }
   });
 
   /**
@@ -9427,32 +9436,34 @@ module.exports = function setupParser(Processing, options) {
     };
     e.BufferArray = [];
     e.print = e.log = function (t) {
-      // var oldheight = e.javaconsole.scrollHeight-e.javaconsole.scrollTop;
-      if (e.BufferArray[e.BufferArray.length - 1]) e.BufferArray[e.BufferArray.length - 1] += (t) + "";
-      else e.BufferArray.push(t);
-      e.javaconsole.innerHTML = e.BufferArray.join('');
-      if (e.wrapper.style.visibility === "hidden") {
-        e.wrapper.style.visibility = "visible";
-      }
-      //if (e.BufferArray.length > e.BufferMax) e.BufferArray.splice(0, 1);
-      //else e.javaconsole.scrollTop = oldheight;
-      if (e.wrapper.style.visibility === "hidden") {
-        e.wrapper.style.visibility = "visible";
-      }
+      console.log(t);
+      // // var oldheight = e.javaconsole.scrollHeight-e.javaconsole.scrollTop;
+      // if (e.BufferArray[e.BufferArray.length - 1]) e.BufferArray[e.BufferArray.length - 1] += (t) + "";
+      // else e.BufferArray.push(t);
+      // e.javaconsole.innerHTML = e.BufferArray.join('');
+      // if (e.wrapper.style.visibility === "hidden") {
+      //   e.wrapper.style.visibility = "visible";
+      // }
+      // //if (e.BufferArray.length > e.BufferMax) e.BufferArray.splice(0, 1);
+      // //else e.javaconsole.scrollTop = oldheight;
+      // if (e.wrapper.style.visibility === "hidden") {
+      //   e.wrapper.style.visibility = "visible";
+      // }
     };
     e.println = function (t) {
-      if(!added) { document.body.appendChild(e.wrapper); }
-      e.print(t);
-      e.BufferArray.push('<br/>');
-      e.javaconsole.innerHTML = e.BufferArray.join('');
-      if (e.wrapper.style.visibility === "hidden") {
-        e.wrapper.style.visibility = "visible";
-      }
-      if (e.BufferArray.length > e.BufferMax) e.BufferArray.splice(0, 1);
-      else e.javaconsole.scrollTop = e.javaconsole.scrollHeight;
-      if (e.wrapper.style.visibility === "hidden") {
-        e.wrapper.style.visibility = "visible";
-      }
+      console.log(t + "\n");
+      // if(!added) { document.body.appendChild(e.wrapper); }
+      // e.print(t);
+      // e.BufferArray.push('<br/>');
+      // e.javaconsole.innerHTML = e.BufferArray.join('');
+      // if (e.wrapper.style.visibility === "hidden") {
+      //   e.wrapper.style.visibility = "visible";
+      // }
+      // if (e.BufferArray.length > e.BufferMax) e.BufferArray.splice(0, 1);
+      // else e.javaconsole.scrollTop = e.javaconsole.scrollHeight;
+      // if (e.wrapper.style.visibility === "hidden") {
+      //   e.wrapper.style.visibility = "visible";
+      // }
     };
     e.showconsole = function () {
       e.wrapper.style.visibility = "visible";
@@ -9599,18 +9610,31 @@ module.exports = function setupParser(Processing, options) {
     // JavaScript event binding and releasing
     ////////////////////////////////////////////////////////////////////////////
 
-    var eventHandlers = [];
+    // var eventHandlers = [];
+    window.eventHandlers = [];
 
     function attachEventHandler(elem, type, fn) {
-      if (elem.addEventListener) {
-        elem.addEventListener(type, fn, false);
-      } else {
-        elem.attachEvent("on" + type, fn);
-      }
-      eventHandlers.push({elem: elem, type: type, fn: fn});
+      // if (elem.addEventListener) {
+      //   elem.addEventListener(type, fn, false);
+      // } else {
+      //   elem.attachEvent("on" + type, fn);
+      // }
+      var newfn = function() {
+        try {
+          fn.apply(this, arguments);
+        } catch (err) {
+          if (window.printStackTrace) window.printStackTrace(err);
+          else throw err;
+        }
+      };
+      if (elem.addEventListener) elem.addEventListener(type, newfn, false);
+      else elem.attachEvent("on" + type, newfn);
+
+      eventHandlers.push({elem: elem, type: type, fn: newfn});
     }
 
-    function detachEventHandler(eventHandler) {
+    // function detachEventHandler(eventHandler) {
+    window.detachEventHandler = function (eventHandler) {
       var elem = eventHandler.elem,
           type = eventHandler.type,
           fn   = eventHandler.fn;
@@ -9706,8 +9730,13 @@ module.exports = function setupParser(Processing, options) {
     p.frameCount      = 0;
 
     // The height/width of the canvas
-    p.width           = 100;
-    p.height          = 100;
+    // p.width           = 100;
+    // p.height          = 100;
+    {
+      var docWindow = document.documentElement;
+      p.width = docWindow.clientWidth;
+      p.height = docWindow.clientHeight;
+    }
 
     // "Private" variables used to maintain state
     var curContext,
@@ -13553,7 +13582,8 @@ module.exports = function setupParser(Processing, options) {
           curSketch.onFrameEnd();
         } catch(e_loop) {
           window.clearInterval(looping);
-          throw e_loop;
+          if (window.printStackTrace) window.printStackTrace(e_loop);
+          else throw e_loop;
         }
       }, curMsPerFrame);
       doLoop = true;
@@ -14291,8 +14321,13 @@ module.exports = function setupParser(Processing, options) {
         curElement.style.removeProperty("height");
       }
 
-      curElement.width = p.width = aWidth || 100;
-      curElement.height = p.height = aHeight || 100;
+      // curElement.width = p.width = aWidth || 100;
+      // curElement.height = p.height = aHeight || 100;
+      {
+        var docWindow = document.documentElement;
+        curElement.width = p.width = aWidth || docWindow.clientWidth;
+        curElement.height = p.height = aHeight || docWindow.clientHeight;
+      }
 
       for (var prop in savedProperties) {
         if (savedProperties.hasOwnProperty(prop)) {
@@ -14362,8 +14397,13 @@ module.exports = function setupParser(Processing, options) {
           // 3D sketches, browsers will either not render or render the
           // scene incorrectly. To fix this, we need to adjust the
           // width and height attributes of the canvas.
-          curElement.width = p.width = aWidth || 100;
-          curElement.height = p.height = aHeight || 100;
+          // curElement.width = p.width = aWidth || 100;
+          // curElement.height = p.height = aHeight || 100;
+          {
+            var docWindow = document.documentElement;
+            curElement.width = p.width = aWidth || docWindow.clientWidth;
+            curElement.height = p.height = aHeight || docWindow.clientHeight;
+          }
           curContext = getGLContext(curElement);
           canTex = curContext.createTexture();
           textTex = curContext.createTexture();
@@ -18217,10 +18257,18 @@ module.exports = function setupParser(Processing, options) {
     p.save = function(file, img) {
       // file is unused at the moment
       // may implement this differently in later release
-      if (img !== undef) {
-        return window.open(img.toDataURL(),"_blank");
+      var canvas = img || p.externals.canvas;
+      if (!!saveAs && !!canvas.toBlob) {
+        canvas.toBlob(function(blob) {
+          saveAs(blob, file || "image.png");
+        });
+      } else {
+        return window.open(canvas.toDataURL(), "_blank");
       }
-      return window.open(p.externals.canvas.toDataURL(),"_blank");
+      // if (img !== undef) {
+      //   return window.open(img.toDataURL(),"_blank");
+      // }
+      // return window.open(p.externals.canvas.toDataURL(),"_blank");
     };
 
     var saveNumber = 0;
@@ -19314,11 +19362,14 @@ module.exports = function setupParser(Processing, options) {
         curContext.setTransform(1, 0, 0, 1, 0, 0);
 
         // If the background is transparent
-        if (p.alpha(backgroundObj) !== colorModeA) {
-          curContext.clearRect(0,0, p.width, p.height);
-        }
+        // if (p.alpha(backgroundObj) !== colorModeA) {
+        //   curContext.clearRect(0,0, p.width, p.height);
+        // }
+        curContext.beginPath();
+        curContext.rect(0, 0, p.width, p.height);
         curContext.fillStyle = p.color.toString(backgroundObj);
-        curContext.fillRect(0, 0, p.width, p.height);
+        // curContext.fillRect(0, 0, p.width, p.height);
+        curContext.fill();
         isFillDirty = true;
         restoreContext();
       }
@@ -21643,3 +21694,4 @@ module.exports = function buildProcessingJS(Browser, testHarness) {
 
 },{"../package.json":2,"./Helpers/ObjectIterator":3,"./Helpers/PConstants":4,"./Helpers/defaultScope":5,"./Helpers/finalizeProcessing":6,"./Helpers/virtEquals":7,"./Helpers/virtHashCode":8,"./Objects/ArrayList":9,"./Objects/Char":10,"./Objects/HashMap":11,"./Objects/PFont":12,"./Objects/PMatrix2D":13,"./Objects/PMatrix3D":14,"./Objects/PShape":15,"./Objects/PShapeSVG":16,"./Objects/PVector":17,"./Objects/XMLAttribute":18,"./Objects/XMLElement":19,"./Objects/webcolors":20,"./P5Functions/JavaProxyFunctions":21,"./P5Functions/Math.js":22,"./P5Functions/commonFunctions":23,"./P5Functions/touchmouse":24,"./Parser/Parser":25,"./Processing":26}]},{},[1])
 ;
+
