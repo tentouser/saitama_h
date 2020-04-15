@@ -129,7 +129,9 @@ void updateUnitList(ArrayList<Unit> unitList){
     PVector diff = defaultPosition.get();
     diff.sub(unit.pos);
     diff.mult(0.1);
-    unit.pos = unit.pos.add(diff);
+    PVector pos = unit.pos.get();
+    pos.add(diff);
+    unit.pos = pos;
   }
   if(unit.status == 1){
     PVector targetPosition = new PVector(mouseX, mouseY - 50);
@@ -138,7 +140,8 @@ void updateUnitList(ArrayList<Unit> unitList){
   if(unit.status == 99){
     return;
   }
-  renderStone(unit.pos.x, unit.pos.y, unit.type);
+  PVector pos = unit.pos.get();
+  renderStone(pos.x, pos.y, unit.type);
 }
 void renderBoxList(ArrayList<Box> boxList){
   for(int i=0; i<boxList.size(); i++){
