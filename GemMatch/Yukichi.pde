@@ -1,3 +1,4 @@
+int stageLevel=0;
 IState state;
 GameData gameData;
 void setup(){
@@ -20,6 +21,11 @@ void draw(){
 }
 
 void mousePressed(){
+  if(state instanceof ClearState){
+    gameData = createGameData();
+    setState(new NormalState());
+    return;
+  }
   Unit unit = gameData.unitList.get(0);
   unit.status = 1;
 }
@@ -161,6 +167,15 @@ void renderStoneList(ArrayList<Stone> stoneList){
 void renderStone(float x, float y, int type){
   String money = Logic.typeToMoneyString(type);
   fill(255);
+  if(type == 1)  fill(255, 255, 255);
+  if(type == 2)  fill(255, 150, 0);
+  if(type == 3)  fill(255, 160, 100);
+  if(type == 4)  fill(200, 200, 200);
+  if(type == 5)  fill(100, 100, 100);
+  if(type == 6)  fill(200, 200, 200);
+  if(type == 7)  fill(150, 250, 150);
+  if(type == 8)  fill(250, 250, 150);
+  if(type == 9)  fill(200, 200, 100);
   ellipse(x, y, 40, 40);
   textAlign(CENTER, CENTER);
   fill(0);
@@ -169,7 +184,7 @@ void renderStone(float x, float y, int type){
 }
 
 GameData createGameData(){
-  int stageLevel = 1;
+  stageLevel += 1;
   if(gameData != null){
     stageLevel = gameData.stageData.stageLevel + 1;
   }
@@ -211,7 +226,7 @@ ArrayList<Stone> createStoneList(StageData stageData){
     Stone stone = new Stone();
     stone.x = (int)random(0, 5);
     stone.y = (int)random(0, 5);
-    stone.type = goal - 1;
+    stone.type = goal - (int)random(1, 3);
     list.add(stone);
   }
   return list;
@@ -219,7 +234,8 @@ ArrayList<Stone> createStoneList(StageData stageData){
 ArrayList<Unit> createUnitList(StageData stageData){
   ArrayList<Unit> list = new ArrayList<Unit>();
   int goal = stageData.goal;
-  int max = goal - 3;
+  int max = goal - (int)random(3, 5);
+  println(max);
   if(max < 1)  max = 1;
   for(int i=0; i<999; i++){
     Unit unit = new Unit();
