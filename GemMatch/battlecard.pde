@@ -189,7 +189,7 @@ class Logic{
   public ArrayList<Card> createCardList(int playerId){
     ArrayList<Card> cardList = new ArrayList<Card>();
     // 必殺
-    for(int i=1; i<=6; i++){
+    for(int i=1; i<=3; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 1;
@@ -197,7 +197,7 @@ class Logic{
       cardList.add(card);
     }
     // 攻撃
-    for(int i=1; i<=6; i++){
+    for(int i=1; i<=3; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 2;
@@ -205,7 +205,7 @@ class Logic{
       cardList.add(card);
     }
     // 防御
-    for(int i=1; i<=6; i++){
+    for(int i=1; i<=3; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 3;
