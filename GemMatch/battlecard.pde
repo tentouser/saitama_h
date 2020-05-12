@@ -27,6 +27,13 @@ class SelectState implements IState{
     BackDeck player02Deck = gameData.player02Deck;
     HandDeck player01Hand = gameData.player01Hand;
     HandDeck player02Hand = gameData.player02Hand;
+    
+    if(player01Deck.cardList.size() == 0){
+      player01Deck.cardList = logic.createCardList(1);
+    }
+    if(player02Deck.cardList.size() == 0){
+      player02Deck.cardList = logic.createCardList(2);
+    }
     for(int i=0; i<3; i++){
       if(player01Hand.cards[i] == null){
         player01Hand.cards[i] = logic.getAndRemoveCard(player01Deck.cardList);
@@ -67,9 +74,14 @@ class DecideState implements IState{
     }
     
     HandDeck player02Hand = gameData.player02Hand;
-    int r = (int)random(0, player02Hand.cards.length);
-    enemyCard = player02Hand.cards[r];
-    player02Hand.cards[r] = null;
+    enemyCard = logic.aiSelect(player02Hand.cards, player01Hand.cards);
+    for(int i=0; i<player02Hand.cards.length; i++){
+      if(player02Hand.cards[i] == enemyCard){
+        player02Hand.cards[i] = null;
+        break;
+      }
+    }
+    
     
     int selfAttack = logic.getAttack(playerCard, enemyCard);
     int otherAttack = logic.getAttack(enemyCard, playerCard);
@@ -82,6 +94,9 @@ class DecideState implements IState{
   public IState update(){
     time += 1;
     if(time > 120){
+      if(gameData.player01Hp <= -5 || gameData.player02Hp < -5){
+        return new ResultState(); 
+      }
       return new SelectState(); 
     }
     HandDeck player01Hand = gameData.player01Hand;
@@ -106,6 +121,39 @@ class DecideState implements IState{
     return null;
   }
 }
+class ResultState implements IState{
+  int result;
+  public void enter(){
+    if(gameData.player02Hp <= -5){
+      result = 1;
+    }
+    if(gameData.player01Hp <= -5){
+      result = 2;
+    }
+    if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
+      result = 9;
+    }
+  }
+  public IState update(){
+    String message = "";
+    if(result == 1){
+      message = "You Win!";
+    }
+    if(result == 2){
+      message = "You Lose";
+    }
+    if(result == 9){
+      message = "Draw";
+    }
+    fill(0, 0, 0, 100);
+    rect(width, height, width/2, height/2);
+    textAlign(CENTER);
+    textSize(64);
+    fill(255);
+    text(message, width/2, height/2);
+    return null;
+  }
+}
 GameData gameData;
 Logic logic = new Logic();
 IState state;
@@ -124,6 +172,10 @@ void draw(){
     state.enter();
   }
   renderStatus();
+  textSize(12);
+  fill(255);
+  textAlign(RIGHT, CENTER);
+  text("ver1.0.1", width, 450);
 }
 void mousePressed(){
   if(state instanceof SelectState){
@@ -158,9 +210,9 @@ void renderCard(Card card, PVector pos){
   textSize(24);
   fill(0);
   String mes = "";
-  if(card.type == 1)  mes = "必殺";
-  if(card.type == 2)  mes = "攻撃";
-  if(card.type == 3)  mes = "防御";
+  if(card.type == 1)  mes = "必";
+  if(card.type == 2)  mes = "攻";
+  if(card.type == 3)  mes = "封";
   text(mes, pos.x, pos.y - 20);
   if(card.strength > 0){
     text(card.strength, pos.x, pos.y + 10);
@@ -189,23 +241,25 @@ class Logic{
   public ArrayList<Card> createCardList(int playerId){
     ArrayList<Card> cardList = new ArrayList<Card>();
     // 必殺
-    for(int i=1; i<=3; i++){
+    for(int i=0; i<3; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 1;
       card.strength = i % 3 + 1;
       cardList.add(card);
     }
+    
     // 攻撃
-    for(int i=1; i<=3; i++){
+    for(int i=0; i<2; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 2;
       card.strength = i % 3 + 1;
       cardList.add(card);
     }
+    
     // 防御
-    for(int i=1; i<=3; i++){
+    for(int i=0; i<3; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 3;
@@ -250,5 +304,57 @@ class Logic{
       return self.strength;
     }
     return 0;
+  }
+  public Card aiSelect(Card[] selfCards, Card[] enemyCards){
+    // とりあえずランダムでとっておく
+    int r = (int)random(0, selfCards.length);
+    Card selectCard = selfCards[r];
+    
+    // 絶対に得するカードをピックアップして選択
+    ArrayList<Card> victoryCardList = new ArrayList<Card>();
+    for(int i=0; i<selfCards.length; i++){
+      Card selfCard = selfCards[i];
+      if(selfCard == null) continue;
+      boolean isVictory = true;
+      for(int j=0; j<enemyCards.length; j++){
+        Card enemyCard = enemyCards[j];
+        if(enemyCard == null) continue;
+        // 与えられるダメージ数を算出
+        int attack = getAttack(selfCard, enemyCard);
+        if(attack <= 0){
+          isVictory = false;
+          break;
+        }
+      }
+      if(isVictory){
+        victoryCardList.add(selfCard); 
+      }
+    }
+    if(victoryCardList.size() > 0){
+      r = (int)random(0, victoryCardList.size());
+      selectCard = victoryCardList.get(r);
+    }
+    
+    // 絶対に損するカードを排除して選択
+    ArrayList<Card> effectiveCardList = new ArrayList<Card>();
+    for(int i=0; i<selfCards.length; i++){
+      Card selfCard = selfCards[i];
+      if(selfCard == null) continue;
+      for(int j=0; j<enemyCards.length; j++){
+        Card enemyCard = enemyCards[j];
+        if(enemyCard == null) continue;
+        // デメリットを算出
+        int damage = getAttack(enemyCard, selfCard);
+        if(damage == 0){
+          effectiveCardList.add(selfCard);
+          break;
+        }
+      }
+    }
+    if(effectiveCardList.size() > 0){
+      r = (int)random(0, effectiveCardList.size());
+      selectCard = effectiveCardList.get(r);
+    }
+    return selectCard;
   }
 }
