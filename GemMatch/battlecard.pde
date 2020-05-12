@@ -93,12 +93,6 @@ class DecideState implements IState{
   }
   public IState update(){
     time += 1;
-    if(time > 120){
-      if(gameData.player01Hp <= -5 || gameData.player02Hp < -5){
-        return new ResultState(); 
-      }
-      return new SelectState(); 
-    }
     HandDeck player01Hand = gameData.player01Hand;
     HandDeck player02Hand = gameData.player02Hand;
     for(int i=0; i<player01Hand.cards.length; i++){
@@ -118,39 +112,14 @@ class DecideState implements IState{
     
     renderCard(this.playerCard, new PVector(width/2, 300));
     renderCard(this.enemyCard, new PVector(width/2, 180));
-    return null;
-  }
-}
-class ResultState implements IState{
-  int result;
-  public void enter(){
-    if(gameData.player02Hp <= -5){
-      result = 1;
+
+    if(time > 120){
+      if(gameData.player01Hp <= -5 || gameData.player02Hp <= -5){
+        renderResult();
+      }else{
+        return new SelectState(); 
+      }
     }
-    if(gameData.player01Hp <= -5){
-      result = 2;
-    }
-    if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
-      result = 9;
-    }
-  }
-  public IState update(){
-    String message = "";
-    if(result == 1){
-      message = "You Win!";
-    }
-    if(result == 2){
-      message = "You Lose";
-    }
-    if(result == 9){
-      message = "Draw";
-    }
-    fill(0, 0, 0, 100);
-    rect(width, height, width/2, height/2);
-    textAlign(CENTER);
-    textSize(64);
-    fill(255);
-    text(message, width/2, height/2);
     return null;
   }
 }
@@ -194,6 +163,34 @@ void mousePressed(){
       }
     }
   }
+}
+void renderResult(){
+  int result = 0;
+  if(gameData.player02Hp <= -5){
+    result = 1;
+  }
+  if(gameData.player01Hp <= -5){
+    result = 2;
+  }
+  if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
+    result = 9;
+  }
+  String message = "";
+  if(result == 1){
+    message = "You Win!";
+  }
+  if(result == 2){
+    message = "You Lose";
+  }
+  if(result == 9){
+    message = "Draw";
+  }
+  fill(0, 0, 0, 100);
+  rect(width/2, height/2, width, height);
+  textAlign(CENTER);
+  textSize(64);
+  fill(255);
+  text(message, width/2, height/2); 
 }
 void renderStatus(){
   textAlign(CENTER, CENTER);
