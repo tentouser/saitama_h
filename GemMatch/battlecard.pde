@@ -18,6 +18,12 @@ class GameData{
   public int player01Hp;
   public int player02Hp;
 }
+class PlayerData{
+  public int playCount;
+  public int winCount;
+  public int loseCount;
+  public int drawCount;
+}
 interface IState{
   void enter();
   IState update();
@@ -46,16 +52,16 @@ class SelectState implements IState{
   public IState update(){
     if(playerCard != null){
       if(gameData.playMode == 1){
-        // time += 1;
-        if(time >= 120){
+        time += 1;
+        if(time >= 300){
           DecideState s = new DecideState();
           s.playerCard = playerCard;
           return s;
         }
       }
       if(gameData.playMode == 2 && enemyCard != null){
-        // time += 1;
-        if(time >= 120){
+        time += 1;
+        if(time >= 300){
           DecideState s = new DecideState();
           s.playerCard = playerCard;
           s.enemyCard = enemyCard;
@@ -91,10 +97,12 @@ class SelectState implements IState{
     BackDeck player02Deck = gameData.player02Deck;
     for(int i=0; i<player01Deck.cardList.size(); i++){
       fill(255);
+      stroke(0);
       rect(300, 380 + i * 5, 50/2, 80/2);
     }
     for(int i=0; i<player02Deck.cardList.size(); i++){
       fill(255);
+      stroke(0);
       rect(25, 60 + i * 5, 50/2, 80/2);
     }
     
@@ -108,7 +116,17 @@ class SelectState implements IState{
       fill(255);
       textSize(12);
       text(message02, width/2, 20);
-      
+    }
+    if(gameData.playMode == 1){
+      if(playerCard != null){
+        fill(0, 0, 0, 100);
+        rect(width/2, height/2, width, height);
+        fill(255);
+        textSize(24);
+        text("Ready?", width/2, height/2);
+      }
+    }
+    if(gameData.playMode == 2){
       if(playerCard != null && enemyCard != null){
         fill(0, 0, 0, 100);
         rect(width/2, height/2, width, height);
@@ -122,8 +140,15 @@ class SelectState implements IState{
   }
   
   public void tap(){
-    if(playerCard != null && enemyCard != null){
-      time = 120;
+    if(gameData.playMode == 1){
+      if(playerCard != null){
+        time = 300;
+      }
+    }
+    if(gameData.playMode == 2){
+      if(playerCard != null && enemyCard != null){
+        time = 300;
+      }
     }
   }
 }
@@ -155,6 +180,8 @@ class DecideState implements IState{
     
     gameData.player01Hp -= otherAttack;
     gameData.player02Hp -= selfAttack;
+    
+    
   }
   public IState update(){
     time += 1;
@@ -186,10 +213,12 @@ class DecideState implements IState{
     BackDeck player02Deck = gameData.player02Deck;
     for(int i=0; i<player01Deck.cardList.size(); i++){
       fill(255);
+      stroke(0);
       rect(300, 380 + i * 5, 50/2, 80/2);
     }
     for(int i=0; i<player02Deck.cardList.size(); i++){
       fill(255);
+      stroke(0);
       rect(25, 60 + i * 5, 50/2, 80/2);
     }
 
@@ -235,12 +264,13 @@ class TitleState implements IState{
     textSize(12);
     fill(255);
     textAlign(RIGHT, CENTER);
-    text("ver1.0.5", width, 450);
+    text("ver1.0.6", width, 450);
     
     return null; 
   }
 }
 
+PlayerData playerData;
 GameData gameData;
 Logic logic = new Logic();
 IState state;
@@ -248,6 +278,7 @@ void setup(){
   size(320, 480); 
   rectMode(CENTER);
   textFont(createFont("Arial", 32));
+  playerData = new PlayerData();
   state = new TitleState();
 }
 void draw(){
@@ -302,39 +333,19 @@ void mousePressed(){
   }
 }
 void renderResult(){
-  int result = 9;
-  if(gameData.player02Hp <= -5){
-    result = 1;
-  }
-  if(gameData.player01Hp <= -5){
-    result = 2;
-  }
-  
-  // 枚数があるか
-  int count = 0;
-  for(int i=0; i<gameData.player01Hand.cards.length; i++){
-    if(gameData.player01Hand.cards[i] != null){
-      count += 1;
-    }
-  }
-  if(count == 0){
-     if(gameData.player01Hp > gameData.player02Hp){
-       result = 1;
-     }
-     if(gameData.player01Hp < gameData.player02Hp){
-       result = 2;
-     }
-  }
-
-  if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
-    result = 9;
-  }
+  int result = logic.getResult(gameData);
   String message = "";
   if(result == 1){
     message = "You Win!";
+    if(gameData.playMode == 2){
+      message = "Player01\nWin!";
+    }
   }
   if(result == 2){
     message = "You Lose";
+    if(gameData.playMode == 2){
+      message = "Player02\nWin!";
+    }
   }
   if(result == 9){
     message = "Draw";
@@ -348,14 +359,18 @@ void renderResult(){
 }
 void renderStatus(){
   textAlign(CENTER, CENTER);
-  textSize(64);
+  textSize(32);
   fill(0, 0, 255);
-  text(gameData.player01Hp, width/2 + 80, 300);
+  text(gameData.player01Hp, width/2 + 135, 330);
   fill(255, 0, 0);
-  text(gameData.player02Hp, width/2 - 80, 180);
+  text(gameData.player02Hp, width/2 - 135, 120);
 }
 void renderCard(Card card, PVector pos){
   fill(255);
+  if(card.type == 1)  fill(255, 255, 100);
+  if(card.type == 2)  fill(255, 100, 100);
+  if(card.type == 3)  fill(100, 100, 255);
+  stroke(255);
   rect(pos.x, pos.y, 50, 80);
   textAlign(CENTER, CENTER);
   textSize(24);
@@ -366,6 +381,7 @@ void renderCard(Card card, PVector pos){
   if(card.type == 3)  mes = "封";
   text(mes, pos.x, pos.y - 20);
   if(card.strength > 0){
+    fill(0);
     text(card.strength, pos.x, pos.y + 10);
   }
 }
@@ -511,5 +527,35 @@ class Logic{
       selectCard = effectiveCardList.get(r);
     }
     return selectCard;
+  }
+  public int getResult(GameData gameData){
+    int result = 9;
+    if(gameData.player02Hp <= -5){
+      result = 1;
+    }
+    if(gameData.player01Hp <= -5){
+      result = 2;
+    }
+    
+    // 枚数があるか
+    int count = 0;
+    for(int i=0; i<gameData.player01Hand.cards.length; i++){
+      if(gameData.player01Hand.cards[i] != null){
+        count += 1;
+      }
+    }
+    if(count == 0){
+       if(gameData.player01Hp > gameData.player02Hp){
+         result = 1;
+       }
+       if(gameData.player01Hp < gameData.player02Hp){
+         result = 2;
+       }
+    }
+  
+    if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
+      result = 9;
+    } 
+    return result;
   }
 }
