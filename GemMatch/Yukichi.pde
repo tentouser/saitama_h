@@ -54,6 +54,17 @@ class SelectState implements IState{
       PVector pos = logic.toPosition(2, i);
       renderCard(card, pos);
     }
+    
+    BackDeck player01Deck = gameData.player01Deck;
+    BackDeck player02Deck = gameData.player02Deck;
+    for(int i=0; i<player01Deck.cardList.size(); i++){
+      fill(255);
+      rect(300, 380 + i * 5, 50/2, 80/2);
+    }
+    for(int i=0; i<player02Deck.cardList.size(); i++){
+      fill(255);
+      rect(25, 60 + i * 5, 50/2, 80/2);
+    }
     return null;
   }
 }
@@ -110,6 +121,17 @@ class DecideState implements IState{
     
     renderCard(this.playerCard, new PVector(width/2, 300));
     renderCard(this.enemyCard, new PVector(width/2, 180));
+    
+    BackDeck player01Deck = gameData.player01Deck;
+    BackDeck player02Deck = gameData.player02Deck;
+    for(int i=0; i<player01Deck.cardList.size(); i++){
+      fill(255);
+      rect(300, 380 + i * 5, 50/2, 80/2);
+    }
+    for(int i=0; i<player02Deck.cardList.size(); i++){
+      fill(255);
+      rect(25, 60 + i * 5, 50/2, 80/2);
+    }
 
     if(time > 120){
       if(gameData.player01Hp <= -5 || gameData.player02Hp <= -5 || handCount == 0){
