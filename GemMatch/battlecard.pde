@@ -28,12 +28,6 @@ class SelectState implements IState{
     HandDeck player01Hand = gameData.player01Hand;
     HandDeck player02Hand = gameData.player02Hand;
     
-    if(player01Deck.cardList.size() == 0){
-      player01Deck.cardList = logic.createCardList(1);
-    }
-    if(player02Deck.cardList.size() == 0){
-      player02Deck.cardList = logic.createCardList(2);
-    }
     for(int i=0; i<3; i++){
       if(player01Hand.cards[i] == null){
         player01Hand.cards[i] = logic.getAndRemoveCard(player01Deck.cardList);
@@ -50,13 +44,26 @@ class SelectState implements IState{
     HandDeck player02Hand = gameData.player02Hand;
     for(int i=0; i<player01Hand.cards.length; i++){
       Card card = player01Hand.cards[i];
+      if(card == null) continue;
       PVector pos = logic.toPosition(1, i);
       renderCard(card, pos);
     }
     for(int i=0; i<player02Hand.cards.length; i++){
       Card card = player02Hand.cards[i];
+      if(card == null) continue;
       PVector pos = logic.toPosition(2, i);
       renderCard(card, pos);
+    }
+    
+    BackDeck player01Deck = gameData.player01Deck;
+    BackDeck player02Deck = gameData.player02Deck;
+    for(int i=0; i<player01Deck.cardList.size(); i++){
+      fill(255);
+      rect(300, 380 + i * 5, 50/2, 80/2);
+    }
+    for(int i=0; i<player02Deck.cardList.size(); i++){
+      fill(255);
+      rect(25, 60 + i * 5, 50/2, 80/2);
     }
     return null;
   }
@@ -95,9 +102,11 @@ class DecideState implements IState{
     time += 1;
     HandDeck player01Hand = gameData.player01Hand;
     HandDeck player02Hand = gameData.player02Hand;
+    int handCount = 0;
     for(int i=0; i<player01Hand.cards.length; i++){
       Card card = player01Hand.cards[i];
       if(card != null){
+        handCount += 1;
         PVector pos = logic.toPosition(1, i);
         renderCard(card, pos);
       }
@@ -112,9 +121,20 @@ class DecideState implements IState{
     
     renderCard(this.playerCard, new PVector(width/2, 300));
     renderCard(this.enemyCard, new PVector(width/2, 180));
+    
+    BackDeck player01Deck = gameData.player01Deck;
+    BackDeck player02Deck = gameData.player02Deck;
+    for(int i=0; i<player01Deck.cardList.size(); i++){
+      fill(255);
+      rect(300, 380 + i * 5, 50/2, 80/2);
+    }
+    for(int i=0; i<player02Deck.cardList.size(); i++){
+      fill(255);
+      rect(25, 60 + i * 5, 50/2, 80/2);
+    }
 
     if(time > 120){
-      if(gameData.player01Hp <= -5 || gameData.player02Hp <= -5){
+      if(gameData.player01Hp <= -5 || gameData.player02Hp <= -5 || handCount == 0){
         renderResult();
       }else{
         return new SelectState(); 
@@ -144,7 +164,7 @@ void draw(){
   textSize(12);
   fill(255);
   textAlign(RIGHT, CENTER);
-  text("ver1.0.1", width, 450);
+  text("ver1.0.2", width, 450);
 }
 void mousePressed(){
   if(state instanceof SelectState){
@@ -165,13 +185,30 @@ void mousePressed(){
   }
 }
 void renderResult(){
-  int result = 0;
+  int result = 9;
   if(gameData.player02Hp <= -5){
     result = 1;
   }
   if(gameData.player01Hp <= -5){
     result = 2;
   }
+  
+  // 枚数があるか
+  int count = 0;
+  for(int i=0; i<gameData.player01Hand.cards.length; i++){
+    if(gameData.player01Hand.cards[i] != null){
+      count += 1;
+    }
+  }
+  if(count == 0){
+     if(gameData.player01Hp > gameData.player02Hp){
+       result = 1;
+     }
+     if(gameData.player01Hp < gameData.player02Hp){
+       result = 2;
+     }
+  }
+
   if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
     result = 9;
   }
@@ -247,7 +284,7 @@ class Logic{
     }
     
     // 攻撃
-    for(int i=0; i<2; i++){
+    for(int i=0; i<3; i++){
       Card card = new Card();
       card.playerId = playerId;
       card.type = 2;
@@ -275,6 +312,9 @@ class Logic{
     return cardList;
   }
   public Card getAndRemoveCard(ArrayList<Card> cardList){
+    if(cardList.size() == 0){
+      return null;
+    }
     Card card = cardList.get(0);
     cardList.remove(card);
     return card;
