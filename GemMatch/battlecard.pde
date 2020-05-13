@@ -166,7 +166,7 @@ class DecideState implements IState{
     
     HandDeck player02Hand = gameData.player02Hand;
     if(enemyCard == null){
-      enemyCard = logic.aiSelect(player02Hand.cards, player01Hand.cards);
+      enemyCard = logic.aiSelect(player02Hand.cards, player01Hand.cards, playerCard);
     }
     for(int i=0; i<player02Hand.cards.length; i++){
       if(player02Hand.cards[i] == enemyCard){
@@ -476,7 +476,24 @@ class Logic{
     }
     return 0;
   }
-  public Card aiSelect(Card[] selfCards, Card[] enemyCards){
+  public Card aiSelect(Card[] selfCards, Card[] enemyCards, Card battleCard){
+    if(random(0, 100) > 80){
+      int index = -1;
+      int _attack = 0;
+      for(int i=0; i<selfCards.length; i++){
+        Card selfCard = selfCards[i];
+        if(selfCard == null) continue;
+        int attack = getAttack(selfCard, battleCard);
+        if(attack > _attack){
+          index = i;
+          _attack = attack;
+        }
+      }
+      if(index >= 0){
+        return selfCards[index]; 
+      }
+    }
+    
     // とりあえずランダムでとっておく
     int r = (int)random(0, selfCards.length);
     Card selectCard = selfCards[r];
