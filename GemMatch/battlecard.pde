@@ -25,6 +25,7 @@ interface IState{
 class SelectState implements IState{
   public Card playerCard;
   public Card enemyCard;
+  int time;
   public void enter(){
     BackDeck player01Deck = gameData.player01Deck;
     BackDeck player02Deck = gameData.player02Deck;
@@ -45,15 +46,21 @@ class SelectState implements IState{
   public IState update(){
     if(playerCard != null){
       if(gameData.playMode == 1){
-        DecideState s = new DecideState();
-        s.playerCard = playerCard;
-        return s;
+        // time += 1;
+        if(time >= 120){
+          DecideState s = new DecideState();
+          s.playerCard = playerCard;
+          return s;
+        }
       }
       if(gameData.playMode == 2 && enemyCard != null){
-        DecideState s = new DecideState();
-        s.playerCard = playerCard;
-        s.enemyCard = enemyCard;
-        return s;
+        // time += 1;
+        if(time >= 120){
+          DecideState s = new DecideState();
+          s.playerCard = playerCard;
+          s.enemyCard = enemyCard;
+          return s;
+        }
       }
     }
     
@@ -78,17 +85,7 @@ class SelectState implements IState{
     }
     fill(255);
     textSize(12);
-    text(message, width/2, 320);
-    
-    if(gameData.playMode == 2){
-      String message02 = "選択してください。";
-      if(enemyCard != null){
-        message02 = "選択済み";
-      }
-      fill(255);
-      textSize(12);
-      text(message02, width/2, 140);
-    }
+    text(message, width/2, 460);
     
     BackDeck player01Deck = gameData.player01Deck;
     BackDeck player02Deck = gameData.player02Deck;
@@ -102,7 +99,32 @@ class SelectState implements IState{
     }
     
     renderStatus();
+
+    if(gameData.playMode == 2){
+      String message02 = "選択してください。";
+      if(enemyCard != null){
+        message02 = "選択済み";
+      }
+      fill(255);
+      textSize(12);
+      text(message02, width/2, 20);
+      
+      if(playerCard != null && enemyCard != null){
+        fill(0, 0, 0, 100);
+        rect(width/2, height/2, width, height);
+        fill(255);
+        textSize(24);
+        text("Ready?", width/2, height/2);
+      }
+    }
+    
     return null;
+  }
+  
+  public void tap(){
+    if(playerCard != null && enemyCard != null){
+      time = 120;
+    }
   }
 }
 class DecideState implements IState{
@@ -213,7 +235,7 @@ class TitleState implements IState{
     textSize(12);
     fill(255);
     textAlign(RIGHT, CENTER);
-    text("ver1.0.4", width, 450);
+    text("ver1.0.5", width, 450);
     
     return null; 
   }
@@ -249,20 +271,17 @@ void mousePressed(){
     state = s;
     state.enter();
   }else if(state instanceof SelectState){
+    SelectState s = (SelectState)state;
+    
+    // ここで処理してあげないとダメかも。
+    s.tap();
     HandDeck player01Hand = gameData.player01Hand;
     for(int i=0; i<player01Hand.cards.length; i++){
       Card card = player01Hand.cards[i];
       PVector pos = logic.toPosition(1, i);
       if(mouseX < pos.x + 25 && mouseX > pos.x - 25){
         if(mouseY < pos.y + 40 && mouseY > pos.y - 40){
-          SelectState s = (SelectState)state;
           s.playerCard = card;
-          /*
-          DecideState s = new DecideState();
-          s.playerCard = card;
-          state = s;
-          state.enter();
-          */
           break; 
         }
       }
@@ -274,14 +293,7 @@ void mousePressed(){
         PVector pos = logic.toPosition(2, i);
         if(mouseX < pos.x + 25 && mouseX > pos.x - 25){
           if(mouseY < pos.y + 40 && mouseY > pos.y - 40){
-            SelectState s = (SelectState)state;
             s.enemyCard = card;
-            /*
-            DecideState s = new DecideState();
-            s.playerCard = card;
-            state = s;
-            state.enter();
-            */
             break; 
           }
         }
