@@ -164,14 +164,14 @@ class DecideState implements IState{
       }
     }
     
+    HandDeck player02Hand = gameData.player02Hand;
     if(enemyCard == null){
-      HandDeck player02Hand = gameData.player02Hand;
       enemyCard = logic.aiSelect(player02Hand.cards, player01Hand.cards);
-      for(int i=0; i<player02Hand.cards.length; i++){
-        if(player02Hand.cards[i] == enemyCard){
-          player02Hand.cards[i] = null;
-          break;
-        }
+    }
+    for(int i=0; i<player02Hand.cards.length; i++){
+      if(player02Hand.cards[i] == enemyCard){
+        player02Hand.cards[i] = null;
+        break;
       }
     }
 
