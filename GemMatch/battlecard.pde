@@ -10,6 +10,7 @@ class HandDeck{
   public Card[] cards = new Card[3]; 
 }
 class GameData{
+  public int playMode;
   public BackDeck player01Deck;
   public BackDeck player02Deck;
   public HandDeck player01Hand;
@@ -22,6 +23,8 @@ interface IState{
   IState update();
 }
 class SelectState implements IState{
+  public Card playerCard;
+  public Card enemyCard;
   public void enter(){
     BackDeck player01Deck = gameData.player01Deck;
     BackDeck player02Deck = gameData.player02Deck;
@@ -40,6 +43,20 @@ class SelectState implements IState{
     }
   }
   public IState update(){
+    if(playerCard != null){
+      if(gameData.playMode == 1){
+        DecideState s = new DecideState();
+        s.playerCard = playerCard;
+        return s;
+      }
+      if(gameData.playMode == 2 && enemyCard != null){
+        DecideState s = new DecideState();
+        s.playerCard = playerCard;
+        s.enemyCard = enemyCard;
+        return s;
+      }
+    }
+    
     HandDeck player01Hand = gameData.player01Hand;
     HandDeck player02Hand = gameData.player02Hand;
     for(int i=0; i<player01Hand.cards.length; i++){
@@ -55,6 +72,24 @@ class SelectState implements IState{
       renderCard(card, pos);
     }
     
+    String message = "選択してください。";
+    if(playerCard != null){
+      message = "選択済み";
+    }
+    fill(255);
+    textSize(12);
+    text(message, width/2, 320);
+    
+    if(gameData.playMode == 2){
+      String message02 = "選択してください。";
+      if(enemyCard != null){
+        message02 = "選択済み";
+      }
+      fill(255);
+      textSize(12);
+      text(message02, width/2, 140);
+    }
+    
     BackDeck player01Deck = gameData.player01Deck;
     BackDeck player02Deck = gameData.player02Deck;
     for(int i=0; i<player01Deck.cardList.size(); i++){
@@ -65,6 +100,8 @@ class SelectState implements IState{
       fill(255);
       rect(25, 60 + i * 5, 50/2, 80/2);
     }
+    
+    renderStatus();
     return null;
   }
 }
@@ -80,23 +117,22 @@ class DecideState implements IState{
       }
     }
     
-    HandDeck player02Hand = gameData.player02Hand;
-    enemyCard = logic.aiSelect(player02Hand.cards, player01Hand.cards);
-    for(int i=0; i<player02Hand.cards.length; i++){
-      if(player02Hand.cards[i] == enemyCard){
-        player02Hand.cards[i] = null;
-        break;
+    if(enemyCard == null){
+      HandDeck player02Hand = gameData.player02Hand;
+      enemyCard = logic.aiSelect(player02Hand.cards, player01Hand.cards);
+      for(int i=0; i<player02Hand.cards.length; i++){
+        if(player02Hand.cards[i] == enemyCard){
+          player02Hand.cards[i] = null;
+          break;
+        }
       }
     }
-    
-    
+
     int selfAttack = logic.getAttack(playerCard, enemyCard);
     int otherAttack = logic.getAttack(enemyCard, playerCard);
     
     gameData.player01Hp -= otherAttack;
     gameData.player02Hp -= selfAttack;
-    
-    
   }
   public IState update(){
     time += 1;
@@ -122,6 +158,8 @@ class DecideState implements IState{
     renderCard(this.playerCard, new PVector(width/2, 300));
     renderCard(this.enemyCard, new PVector(width/2, 180));
     
+    renderStatus();
+    
     BackDeck player01Deck = gameData.player01Deck;
     BackDeck player02Deck = gameData.player02Deck;
     for(int i=0; i<player01Deck.cardList.size(); i++){
@@ -143,6 +181,44 @@ class DecideState implements IState{
     return null;
   }
 }
+class TitleState implements IState{
+  public void enter(){
+  }
+  public IState update(){
+    fill(255);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("強く儚い者たち", width/2, 100);
+    
+    fill(255);
+    if(mouseX > width/2 - width/4 && mouseX < width/2 + width/4){
+      if(mouseY > 300 - 25 && mouseY < 300 + 25){
+        fill(50, 50, 200);
+      }
+    }
+    rect(width/2, 300, width/2, 50);
+    fill(0);
+    text("CPU対戦", width/2, 300);
+    
+    fill(255);
+    if(mouseX > width/2 - width/4 && mouseX < width/2 + width/4){
+      if(mouseY > 400 - 25 && mouseY < 400 + 25){
+        fill(50, 50, 200);
+      }
+    }
+    rect(width/2, 400, width/2, 50);
+    fill(0);
+    text("ローカル対戦", width/2, 400);
+
+    textSize(12);
+    fill(255);
+    textAlign(RIGHT, CENTER);
+    text("ver1.0.4", width, 450);
+    
+    return null; 
+  }
+}
+
 GameData gameData;
 Logic logic = new Logic();
 IState state;
@@ -150,8 +226,7 @@ void setup(){
   size(320, 480); 
   rectMode(CENTER);
   textFont(createFont("Arial", 32));
-  gameInit();
-  state = new SelectState();
+  state = new TitleState();
 }
 void draw(){
   background(0);
@@ -160,25 +235,55 @@ void draw(){
     state = newState;
     state.enter();
   }
-  renderStatus();
-  textSize(12);
-  fill(255);
-  textAlign(RIGHT, CENTER);
-  text("ver1.0.2", width, 450);
 }
 void mousePressed(){
-  if(state instanceof SelectState){
+  if(state instanceof TitleState){
+    int playMode = 1;
+    if(mouseX > width/2 - width/4 && mouseX < width/2 + width/4){
+      if(mouseY > 400 - 25 && mouseY < 400 + 25){
+        playMode = 2;
+      }
+    }
+    gameInit(playMode);
+    SelectState s = new SelectState();
+    state = s;
+    state.enter();
+  }else if(state instanceof SelectState){
     HandDeck player01Hand = gameData.player01Hand;
     for(int i=0; i<player01Hand.cards.length; i++){
       Card card = player01Hand.cards[i];
       PVector pos = logic.toPosition(1, i);
       if(mouseX < pos.x + 25 && mouseX > pos.x - 25){
         if(mouseY < pos.y + 40 && mouseY > pos.y - 40){
+          SelectState s = (SelectState)state;
+          s.playerCard = card;
+          /*
           DecideState s = new DecideState();
           s.playerCard = card;
           state = s;
           state.enter();
+          */
           break; 
+        }
+      }
+    }
+    if(gameData.playMode == 2){
+      HandDeck player02Hand = gameData.player02Hand;
+      for(int i=0; i<player02Hand.cards.length; i++){
+        Card card = player02Hand.cards[i];
+        PVector pos = logic.toPosition(2, i);
+        if(mouseX < pos.x + 25 && mouseX > pos.x - 25){
+          if(mouseY < pos.y + 40 && mouseY > pos.y - 40){
+            SelectState s = (SelectState)state;
+            s.enemyCard = card;
+            /*
+            DecideState s = new DecideState();
+            s.playerCard = card;
+            state = s;
+            state.enter();
+            */
+            break; 
+          }
         }
       }
     }
@@ -252,8 +357,9 @@ void renderCard(Card card, PVector pos){
     text(card.strength, pos.x, pos.y + 10);
   }
 }
-void gameInit(){
+void gameInit(int playMode){
   gameData = new GameData();
+  gameData.playMode = playMode;
   BackDeck player01Deck = new BackDeck();
   player01Deck.cardList = logic.createCardList(1);
   BackDeck player02Deck = new BackDeck();
