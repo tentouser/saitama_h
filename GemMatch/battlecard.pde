@@ -264,7 +264,7 @@ class TitleState implements IState{
     textSize(12);
     fill(255);
     textAlign(RIGHT, CENTER);
-    text("ver1.0.6", width, 450);
+    text("2020.05.23 ", width, 450);
     
     return null; 
   }
@@ -376,9 +376,9 @@ void renderCard(Card card, PVector pos){
   textSize(24);
   fill(0);
   String mes = "";
-  if(card.type == 1)  mes = "必";
-  if(card.type == 2)  mes = "攻";
-  if(card.type == 3)  mes = "封";
+  if(card.type == 1)  mes = "Gu";
+  if(card.type == 2)  mes = "Ch";
+  if(card.type == 3)  mes = "Pa";
   text(mes, pos.x, pos.y - 20);
   if(card.strength > 0){
     fill(0);
@@ -431,7 +431,7 @@ class Logic{
       Card card = new Card();
       card.playerId = playerId;
       card.type = 3;
-      card.strength = 0;
+      card.strength = i % 3 + 1;
       cardList.add(card);
     }
     // shuffle
@@ -472,6 +472,9 @@ class Logic{
       return self.strength; 
     }
     if(self.type == 2 && other.type == 3){
+      return self.strength;
+    }
+    if(self.type == 3 && other.type == 1){
       return self.strength;
     }
     return 0;
