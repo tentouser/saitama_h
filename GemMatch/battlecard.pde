@@ -397,9 +397,9 @@ void renderStatus(){
   textAlign(CENTER, CENTER);
   textSize(32);
   fill(0, 0, 255);
-  text(gameData.player01Hp, width/2 + 135, 330);
+  text("+" + gameData.player01Hp, width/2 + 135, 330);
   fill(255, 0, 0);
-  text(gameData.player02Hp, width/2 - 135, 120);
+  text("+" + gameData.player02Hp, width/2 - 135, 120);
 }
 void renderCard(Card card, PVector pos){
   fill(255);
