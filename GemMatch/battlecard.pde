@@ -1,3 +1,36 @@
+static class SpriteFinder{
+  static PApplet app;
+  static String basePath;
+  static String[] pathList;
+  static PImage[] imageList;
+  static int index = 0;
+  public static void initialize(PApplet _app, String _basePath){
+    app = _app;
+    basePath = _basePath;
+    pathList = new String[100];
+    imageList = new PImage[100];
+  }
+  public static PImage getSprite(String path){
+    for(int i=0; i<pathList.length; i++){
+      if(pathList[i] == path){
+        return imageList[i]; 
+      }
+    }
+    PImage sprite = app.loadImage(basePath + path);
+    pathList[index] = path;
+    imageList[index] = sprite;
+    index += 1;
+    println(index);
+    return sprite;
+  }
+}
+
+/*
+@pjs preload="Gu.png, 
+Ch.png,
+Pa.png
+";
+*/
 class Card{
   public int playerId;
   public int type;
@@ -178,8 +211,8 @@ class DecideState implements IState{
     int selfAttack = logic.getAttack(playerCard, enemyCard);
     int otherAttack = logic.getAttack(enemyCard, playerCard);
     
-    gameData.player01Hp -= otherAttack;
-    gameData.player02Hp -= selfAttack;
+    gameData.player01Hp += selfAttack;
+    gameData.player02Hp += otherAttack;
     
     
   }
@@ -223,7 +256,8 @@ class DecideState implements IState{
     }
 
     if(time > 120){
-      if(gameData.player01Hp <= -5 || gameData.player02Hp <= -5 || handCount == 0){
+      int point = logic.getMaxPoint();
+      if(gameData.player01Hp >= point || gameData.player02Hp >= point || handCount == 0){
         renderResult();
       }else{
         return new SelectState(); 
@@ -264,7 +298,7 @@ class TitleState implements IState{
     textSize(12);
     fill(255);
     textAlign(RIGHT, CENTER);
-    text("2020.05.23 ", width, 450);
+    text("2020.05.25 ", width, 450);
     
     return null; 
   }
@@ -277,7 +311,9 @@ IState state;
 void setup(){
   size(320, 480); 
   rectMode(CENTER);
+  imageMode(CENTER);
   textFont(createFont("Arial", 32));
+  SpriteFinder.initialize(this, "");
   playerData = new PlayerData();
   state = new TitleState();
 }
@@ -367,22 +403,26 @@ void renderStatus(){
 }
 void renderCard(Card card, PVector pos){
   fill(255);
-  if(card.type == 1)  fill(255, 255, 100);
-  if(card.type == 2)  fill(255, 100, 100);
-  if(card.type == 3)  fill(100, 100, 255);
+  if(card.type == 1)  fill(255, 100, 100);
+  if(card.type == 2)  fill(100, 100, 255);
+  if(card.type == 3)  fill(255, 255, 50);
   stroke(255);
   rect(pos.x, pos.y, 50, 80);
   textAlign(CENTER, CENTER);
   textSize(24);
   fill(0);
-  String mes = "";
-  if(card.type == 1)  mes = "Gu";
-  if(card.type == 2)  mes = "Ch";
-  if(card.type == 3)  mes = "Pa";
-  text(mes, pos.x, pos.y - 20);
+  String file = "";
+  if(card.type == 1)  file = "Gu.png";
+  if(card.type == 2)  file = "Ch.png";
+  if(card.type == 3)  file = "Pa.png";
+  // text(mes, pos.x, pos.y - 20);
+  image(SpriteFinder.getSprite(file), pos.x, pos.y, 40, 40);
   if(card.strength > 0){
+    fill(255);
+    ellipse(pos.x + 15, pos.y - 30, 15, 15);
     fill(0);
-    text(card.strength, pos.x, pos.y + 10);
+    textSize(12);
+    text(card.strength, pos.x + 15, pos.y - 30);
   }
 }
 void gameInit(int playMode){
@@ -406,6 +446,9 @@ void gameInit(int playMode){
   gameData.player02Hand = player02Hand;
 }
 class Logic{
+  public int getMaxPoint(){
+    return 6;
+  }
   public ArrayList<Card> createCardList(int playerId){
     ArrayList<Card> cardList = new ArrayList<Card>();
     // 必殺
@@ -464,7 +507,7 @@ class Logic{
   public int getAttack(Card self, Card other){
     // 同じカードだったら
     if(self.type == other.type){
-      if(self.strength <= other.strength){
+      if(self.strength < other.strength){
         return self.strength;
       }
     }
@@ -550,12 +593,14 @@ class Logic{
   }
   public int getResult(GameData gameData){
     int result = 9;
-    if(gameData.player02Hp <= -5){
+    int point = logic.getMaxPoint();
+    if(gameData.player01Hp >= point){
       result = 1;
     }
-    if(gameData.player01Hp <= -5){
+    if(gameData.player02Hp >= point){
       result = 2;
     }
+
     
     // 枚数があるか
     int count = 0;
@@ -573,7 +618,7 @@ class Logic{
        }
     }
   
-    if(gameData.player01Hp <= -5 && gameData.player02Hp <= -5){
+    if(gameData.player01Hp >= point && gameData.player02Hp >= point){
       result = 9;
     } 
     return result;
