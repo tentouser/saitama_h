@@ -426,16 +426,19 @@ void renderCard(Card card, PVector pos){
     if(card.strength == 1) file = "r_01.png";
     if(card.strength == 2) file = "r_02.png";
     if(card.strength == 3) file = "r_03.png";
+    file = "r_01.png";
   }
   if(card.type == 2){
     if(card.strength == 1) file = "w_01.png";
     if(card.strength == 2) file = "w_02.png";
     if(card.strength == 3) file = "w_03.png";
+    file = "w_01.png";
   }
   if(card.type == 3){
     if(card.strength == 1) file = "g_01.png";
     if(card.strength == 2) file = "g_02.png";
     if(card.strength == 3) file = "g_03.png";
+    file = "g_01.png";
   }
   image(SpriteFinder.getSprite(file), pos.x, pos.y, 40, 40);
   if(card.strength > 0){
