@@ -415,7 +415,6 @@ void renderCard(Card card, PVector pos){
   if(card.type == 1)  fill(255, 100, 100);
   if(card.type == 2)  fill(100, 100, 255);
   if(card.type == 3)  fill(255, 255, 50);
-  fill(255);
   stroke(255);
   rect(pos.x, pos.y, 50, 80);
   textAlign(CENTER, CENTER);
@@ -426,33 +425,35 @@ void renderCard(Card card, PVector pos){
     if(card.strength == 1) file = "r_01.png";
     if(card.strength == 2) file = "r_02.png";
     if(card.strength == 3) file = "r_03.png";
-    file = "r_01.png";
+    file = "Gu.png";
   }
   if(card.type == 2){
     if(card.strength == 1) file = "w_01.png";
     if(card.strength == 2) file = "w_02.png";
     if(card.strength == 3) file = "w_03.png";
-    file = "w_01.png";
+    file = "Ch.png";
   }
   if(card.type == 3){
     if(card.strength == 1) file = "g_01.png";
     if(card.strength == 2) file = "g_02.png";
     if(card.strength == 3) file = "g_03.png";
-    file = "g_01.png";
+    file = "Pa.png";
   }
   image(SpriteFinder.getSprite(file), pos.x, pos.y, 40, 40);
   if(card.strength > 0){
-    fill(255);
-    if(card.type == 1)  fill(255, 100, 100);
-    if(card.type == 2)  fill(100, 100, 255);
-    if(card.type == 3)  fill(255, 255, 50);
-    ellipse(pos.x - 15, pos.y - 30, 20, 20);
-    
-    String type_file = "";
-    if(card.type == 1)  type_file = "Gu.png";
-    if(card.type == 2)  type_file = "Ch.png";
-    if(card.type == 3)  type_file = "Pa.png";
-    image(SpriteFinder.getSprite(type_file), pos.x - 15, pos.y - 30, 10, 10);
+    if(false){
+      fill(255);
+      if(card.type == 1)  fill(255, 100, 100);
+      if(card.type == 2)  fill(100, 100, 255);
+      if(card.type == 3)  fill(255, 255, 50);
+      ellipse(pos.x - 15, pos.y - 30, 20, 20);
+      
+      String type_file = "";
+      if(card.type == 1)  type_file = "Gu.png";
+      if(card.type == 2)  type_file = "Ch.png";
+      if(card.type == 3)  type_file = "Pa.png";
+      image(SpriteFinder.getSprite(type_file), pos.x - 15, pos.y - 30, 10, 10);
+    }
     
     fill(255);
     ellipse(pos.x + 15, pos.y - 30, 15, 15);
