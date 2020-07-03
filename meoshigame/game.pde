@@ -165,10 +165,10 @@ void keyPressed() {
     decide=1;
   }
   if (key=='h') {
-    reset();
+    _reset();
   }
 }
-void reset() {
+void _reset() {
   a = 0;
   b = 0;
   x=100;
