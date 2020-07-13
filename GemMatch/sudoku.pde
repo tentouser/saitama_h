@@ -91,6 +91,15 @@ void draw(){
           textAlign(CENTER, CENTER);
           textSize(10);
           fill(50);
+          if(preStone.number == gameData.select_number){
+            fill(255, 100, 100);
+          }
+          // 仮置きとして成り立つ？
+          if(!canPre(stoneList, preStone.x, preStone.y, preStone.number)){
+            preStoneList.remove(preStone);
+            j--;
+          }
+          
           text(preStone.number, pos.x, pos.y);
         }
       }
@@ -171,7 +180,7 @@ void putStone(int x, int y, int number){
         }
       }
       if(isOK){
-        stone.number = number; 
+        stone.number = number;
       }
       return;
     }
@@ -221,6 +230,24 @@ void gameInit(){
       }
     }
   }
+}
+
+boolean canPre(ArrayList<Stone> stoneList, int prex, int prey, int number){
+  int pre_group_id = getGroupId(prex, prey);
+  for(int i=0; i<stoneList.size(); i++){
+    Stone stone = stoneList.get(i);
+    if(stone.x == prex && stone.number == number){
+      return false;
+    }
+    if(stone.y == prey && stone.number == number){
+      return false;
+    }
+    int group_id = getGroupId(stone.x, stone.y);
+    if(group_id == pre_group_id && stone.number == number){
+      return false;
+    }
+  }
+  return true;
 }
 
 ArrayList<Stone> findStoneByGroup(ArrayList<Stone> stoneList, int group){
