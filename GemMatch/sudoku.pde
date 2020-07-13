@@ -277,8 +277,49 @@ PVector toWorldPosition(int x, int y){
 
 
 static class Sudoku{
-  public static void attachBlanks(PApplet app, int [][] maps){
+  public static void attachBlanks(PApplet app, int[][] maps){
     for(int group=0; group<9; group++){
+      if(group >= 5){
+        // 点対象にするため
+        continue;
+      }
+      int dispCount = (int)app.random(3, 5);
+      int blankCount = 9 - dispCount;
+      int startX = group % 3 * 3;
+      int startY = (int)(group / 3) * 3;
+      int toX = startX + 3;
+      int toY = startY + 3;
+      if(group == 4){
+        // 中央のグループのため
+        dispCount = (int)app.random(0, 3);
+        blankCount = 4 - dispCount;
+      }
+      int count = 0;
+      for(int i=0; i<100; i++){
+        int rx = (int)app.random(startX, toX);
+        int ry = (int)app.random(startY, toY);
+        if(group == 4 && rx == 5 && ry >= 5){
+          // 点対象にするため。
+          continue;
+        }
+        if(maps[rx][ry] > 0){
+          maps[rx][ry] *= -1;
+          
+          // 点対象を探す
+          int _rx = 8 - rx;
+          int _ry = 8 - ry;
+          maps[_rx][_ry] *= -1;
+          
+          count += 1;
+        }
+        if(count >= blankCount){
+          break;
+        }
+      }
+    }
+  }
+  public static void _attachBlanks(PApplet app, int [][] maps){
+    for(int group=0; group<1; group++){
       int blankCount = 9 - (int)app.random(3, 5);
       int startX = group % 3 * 3;
       int startY = (int)(group / 3) * 3;
