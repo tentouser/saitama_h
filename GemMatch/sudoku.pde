@@ -344,16 +344,67 @@ static class Sudoku{
     for(int x=0; x<9; x++){
       for(int y=0; y<9; y++){
         int v = y * 3 + (int)(y / 3);
-        v = (v + x) % 9 + 1;
+        v += x * 2;
+        v = v % 9 + 1;
+        // v = (v + x) % 9 + 1;
         maps[x][y] = v;
+      }
+    }
+    String m = "135862794296574813874319652943658127512793468687421539759286341461937285328145976";
+    for(int y=0; y<9; y++){
+      for(int x=0; x<9; x++){
+        int index = x * 9 + y;
+        String s = m.substring(index, index+1);
+        
+        maps[x][y] = int(s);
+        
       }
     }
     return maps;
   }
   public static void shuffle(PApplet app, int[][] maps){
     for(int i=0; i<999; i++){
-      int from = (int)app.random(1, 10);
-      int to = (int)app.random(1, 10);
+      int from = 0;
+      int to = 0;
+
+      // 縦軸で交換
+      from = (int)app.random(1, 10);
+      to = (int)app.random(1, 10);
+      for(int x=0; x<9; x++){
+        for(int y=0; y<9; y++){
+          if(maps[x][y] == from){
+            maps[x][y] = to;
+            continue;
+          }
+          if(maps[x][y] == to){
+            maps[x][y] = from;
+            continue;
+          }
+        }
+      }
+      
+      // 横軸で交換
+      from = (int)app.random(1, 10);
+      to = (int)app.random(1, 10);
+      for(int y=0; y<9; y++){
+        for(int x=0; x<9; x++){
+          if(maps[x][y] == from){
+            maps[x][y] = to;
+            continue;
+          }
+          if(maps[x][y] == to){
+            maps[x][y] = from;
+            continue;
+          }
+        }
+      }
+      
+      if(true){
+        continue;
+      }    
+      from = (int)app.random(1, 10);
+      to = (int)app.random(1, 10);
+      // グループ内で交換
       for(int group=0; group<9; group++){
         int startX = group % 3 * 3;
         int startY = (int)(group / 3) * 3;
