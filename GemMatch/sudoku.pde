@@ -87,7 +87,7 @@ void draw(){
         if(b.x == preStone.x && b.y == preStone.y){
           PVector pos = toWorldPosition(preStone.x, preStone.y);
           pos.x += (preStone.number - 1) % 3 * 10 - 10;
-          pos.y += (preStone.number - 1) / 3 * 10 - 10;
+          pos.y += (int)((preStone.number - 1) / 3) * 10 - 10;
           textAlign(CENTER, CENTER);
           textSize(10);
           fill(50);
