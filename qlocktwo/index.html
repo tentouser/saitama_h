@@ -8,12 +8,36 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <style>
+      html, body {
+                background-color: #000;
+                color: #636b6f;
+                font-family: 'Nunito', sans-serif;
+                font-weight: 200;
+                height: 100vh;
+                margin: 0;
+            }
+
+.full-height {
+    height: 100vh;
+}
+
+.flex-center {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.position-ref {
+    position: relative;
+}
+    </style>
     <!-- Processing JS -->
     <script src="processing.js"></script>
     <title>qlocktwo</title>
   </head>
-  <body style="background-color:#000000">
-    <div class="container text-center">
+  <body>
+    <div class="container text-center full-height flex-center position-ref">
         <canvas data-processing-sources="qlocktwo.pde"></canvas>
     </div>
   </body>
