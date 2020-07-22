@@ -166,14 +166,14 @@ void draw(){
     text(s, item.pos.x, item.pos.y);
   }
   
-  int hour = hour();
+  int hours = hour();
   int minutes = minute();
   
   // sec += 10;
   // hour = (int)(sec / 3600) % 24;
   // minutes = (int)(sec / 60) % 60;
 
-  String message = grid.makeMessage(hour, minutes);
+  String message = grid.makeMessage(hours, minutes);
   ArrayList<Item> findList = grid.findItemListFromMessage(message);
   for(int i=0; i<findList.size(); i++){
     Item item = findList.get(i);
