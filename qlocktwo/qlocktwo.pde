@@ -149,8 +149,11 @@ class Grid{
 }
 Grid grid;
 int sec = 0;
+/*@pjs font="./NotoSansJP-Regular.ttf";*/
 void setup(){
   size(600, 600);
+  PFont font = loadFont("NotoSansJP-Regular.ttf");
+  textFont(font);
   grid = new Grid();
   grid.createItemList();
 }
