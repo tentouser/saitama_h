@@ -217,8 +217,8 @@ void mousePressed(){
   for(int i=0; i<unitList.size(); i++){
     Unit unit = unitList.get(i);
     if(unit.status == 1){
-      float dist = dist(unit.pos.x, unit.pos.y, mouseX, mouseY);
-      if(dist < 20){
+      float distance = dist(unit.pos.x, unit.pos.y, mouseX, mouseY);
+      if(distance < 20){
         grabUnit(unit);
         break;
       }
