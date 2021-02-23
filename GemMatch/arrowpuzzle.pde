@@ -70,7 +70,7 @@ void draw(){
   
   // ユニットを動かす
   if(selectedUnit != null){
-    selectedUnit.pos = new PVector(mouseX, mouseY); 
+    selectedUnit.pos = new PVector(mouseX, mouseY - 50); 
   }
   
   // プレイヤーを動かす
