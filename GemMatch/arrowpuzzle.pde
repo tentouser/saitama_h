@@ -112,7 +112,7 @@ void draw(){
     Unit unit = unitList.get(i);
     if(unit.status == 1){
       // 定位置へ
-      PVector pos = unit.pos.copy();
+      PVector pos = unit.pos.get();
       PVector fixedPosition = logic.toUnitPosition(unit.index);
       PVector diff = new PVector(fixedPosition.x - pos.x, fixedPosition.y - pos.y);
       if(diff.mag() > 1){
@@ -137,8 +137,8 @@ void releaseUnit(Unit unit){
   boolean canPut = true;
   for(int i=0; i<unit.panelList.size(); i++){
     Panel panel = unit.panelList.get(i);
-    PVector pos = unit.pos.copy();
-    PVector localPos = panel.localPos.copy();
+    PVector pos = unit.pos.get();
+    PVector localPos = panel.localPos.get();
     localPos.mult(50);
     pos.add(localPos);
     Box targetBox = logic.getBoxFromWorldPosition(pos, boxList);
@@ -177,8 +177,8 @@ void releaseUnit(Unit unit){
   if(canPut){
     for(int i=0; i<unit.panelList.size(); i++){
       Panel panel = unit.panelList.get(i);
-      PVector pos = unit.pos.copy();
-      PVector localPos = panel.localPos.copy();
+      PVector pos = unit.pos.get();
+      PVector localPos = panel.localPos.get();
       localPos.mult(50);
       pos.add(localPos);
       Box targetBox = logic.getBoxFromWorldPosition(pos, boxList);
@@ -234,8 +234,8 @@ void mouseReleased(){
 void renderUnit(Unit unit){
   for(int i=0; i<unit.panelList.size(); i++){
     Panel panel = unit.panelList.get(i);
-    PVector pos = unit.pos.copy();
-    PVector localPos = panel.localPos.copy();
+    PVector pos = unit.pos.get();
+    PVector localPos = panel.localPos.get();
     localPos.mult(50);
     pos.add(localPos);
     renderPanel(panel, pos);
