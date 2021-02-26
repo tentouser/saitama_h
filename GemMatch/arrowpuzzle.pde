@@ -347,7 +347,7 @@ class Logic{
       Box box = boxList.get(i);
       PVector boxPosition = toWorldPosition(box.x, box.y);
       PVector diff = new PVector(boxPosition.x - pos.x, boxPosition.y - pos.y);
-      if(diff.mag() < 10){
+      if(diff.mag() < 20){
         return box;
       }
     }
