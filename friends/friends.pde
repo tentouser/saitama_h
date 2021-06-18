@@ -360,3 +360,13 @@ void keyPressed() {
     }
   }
 }
+static class Tento{
+  public static int isHit(float px, float py, float pw, float ph, float ex, float ey, float ew, float eh){
+    if(px < ex + ew && px + pw > ex){
+     if(py < ey + eh && py + ph > ey){
+      return 1; 
+     }
+    }
+    return 0;
+  }
+}
